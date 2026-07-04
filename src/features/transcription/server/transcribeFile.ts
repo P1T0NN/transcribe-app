@@ -1,5 +1,5 @@
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
-import { ELEVENLABS_API_KEY } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import {
 	MAX_UPLOAD_BYTES,
 	MAX_UPLOAD_MB,
@@ -38,11 +38,12 @@ export function validateTranscribeFile(file: File): string | null {
 }
 
 export async function transcribeUploadedFile(file: File): Promise<TranscriptionResult> {
-	if (!ELEVENLABS_API_KEY) {
+	const apiKey = env.ELEVENLABS_API_KEY;
+	if (!apiKey) {
 		throw new Error('ElevenLabs API key is not configured.');
 	}
 
-	const client = new ElevenLabsClient({ apiKey: ELEVENLABS_API_KEY });
+	const client = new ElevenLabsClient({ apiKey });
 
 	return scribeFileToTimedSubtitles(client, file);
 }
