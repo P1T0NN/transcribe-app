@@ -20,7 +20,7 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<ModeWatcher />
+<ModeWatcher disableHeadScriptInjection />
 <div class="flex min-h-dvh flex-col">
 	<NormalHeader changeBgOnScroll={true} />
 	<div class="min-h-0 flex-1">

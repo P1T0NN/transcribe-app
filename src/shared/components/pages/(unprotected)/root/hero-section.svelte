@@ -30,12 +30,40 @@
 		subtitles = '';
 
 		try {
-			const formData = new FormData();
-			formData.set('file', file);
+			const contentType = file.type || 'application/octet-stream';
+
+			const uploadUrlResponse = await fetch('/api/storage/upload-url', {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({ filename: file.name, contentType, size: file.size })
+			});
+
+			const uploadUrlPayload = (await uploadUrlResponse.json().catch(() => null)) as
+				| { key?: string; uploadUrl?: string; message?: string }
+				| null;
+
+			if (!uploadUrlResponse.ok) {
+				throw new Error(uploadUrlPayload?.message ?? 'Could not prepare the upload.');
+			}
+
+			if (!uploadUrlPayload?.key || !uploadUrlPayload.uploadUrl) {
+				throw new Error('Could not prepare the upload.');
+			}
+
+			const putResponse = await fetch(uploadUrlPayload.uploadUrl, {
+				method: 'PUT',
+				headers: { 'content-type': contentType },
+				body: file
+			});
+
+			if (!putResponse.ok) {
+				throw new Error('Upload failed. Please try again.');
+			}
 
 			const response = await fetch('/api/transcribe', {
 				method: 'POST',
-				body: formData
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({ key: uploadUrlPayload.key, filename: file.name })
 			});
 
 			const payload = (await response.json().catch(() => null)) as

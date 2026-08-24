@@ -56,10 +56,10 @@ function timedWordsFromTranscription(transcription: SpeechToTextChunkResponseMod
 /** Cheap path: Scribe word timestamps → short Spanish SRT cues for manual translation. */
 export async function scribeFileToTimedSubtitles(
 	client: ElevenLabsClient,
-	file: File
+	sourceUrl: string
 ): Promise<{ text: string; srt: string }> {
 	const response = await client.speechToText.convert({
-		file,
+		sourceUrl,
 		modelId: 'scribe_v2',
 		languageCode: STT_LANGUAGE_CODE,
 		timestampsGranularity: 'word'

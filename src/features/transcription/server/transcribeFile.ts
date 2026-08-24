@@ -9,6 +9,12 @@ import { scribeFileToTimedSubtitles } from '@/features/transcription/server/scri
 
 const MIME_PREFIXES = ['audio/', 'video/'] as const;
 
+export type TranscribeFileMeta = {
+	name: string;
+	type: string;
+	size: number;
+};
+
 export type TranscriptionResult = {
 	text: string;
 	srt: string;
@@ -19,25 +25,30 @@ function hasAllowedExtension(name: string): boolean {
 	return ext ? TRANSCRIBE_EXTENSIONS.includes(ext as (typeof TRANSCRIBE_EXTENSIONS)[number]) : false;
 }
 
-export function isTranscribableFile(file: File): boolean {
-	if (file.type && MIME_PREFIXES.some((prefix) => file.type.startsWith(prefix))) {
+export function isTranscribableFile(meta: TranscribeFileMeta): boolean {
+	if (meta.type && MIME_PREFIXES.some((prefix) => meta.type.startsWith(prefix))) {
 		return true;
 	}
-	return hasAllowedExtension(file.name);
+	return hasAllowedExtension(meta.name);
 }
 
-export function validateTranscribeFile(file: File): string | null {
-	if (file.size === 0) return 'The file is empty.';
-	if (file.size > MAX_UPLOAD_BYTES) {
+export function validateTranscribeFile(meta: TranscribeFileMeta): string | null {
+	if (meta.size === 0) return 'The file is empty.';
+	if (meta.size > MAX_UPLOAD_BYTES) {
 		return `File must be ${MAX_UPLOAD_MB} MB or smaller.`;
 	}
-	if (!isTranscribableFile(file)) {
+	if (!isTranscribableFile(meta)) {
 		return 'Upload a supported audio or video file (MP3, MP4, WAV, WebM, etc.).';
 	}
 	return null;
 }
 
-export async function transcribeUploadedFile(file: File): Promise<TranscriptionResult> {
+/**
+ * Transcribe a file that has already been uploaded to object storage, by
+ * handing ElevenLabs a presigned URL it can fetch directly (no server-side
+ * download, so serverless memory stays flat).
+ */
+export async function transcribeFromUrl(sourceUrl: string): Promise<TranscriptionResult> {
 	const apiKey = env.ELEVENLABS_API_KEY;
 	if (!apiKey) {
 		throw new Error('ElevenLabs API key is not configured.');
@@ -45,5 +56,5 @@ export async function transcribeUploadedFile(file: File): Promise<TranscriptionR
 
 	const client = new ElevenLabsClient({ apiKey });
 
-	return scribeFileToTimedSubtitles(client, file);
+	return scribeFileToTimedSubtitles(client, sourceUrl);
 }

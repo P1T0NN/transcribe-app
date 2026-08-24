@@ -49,6 +49,8 @@
 		"vite": "^7.2.6"
 	},
 	"dependencies": {
+		"@aws-sdk/client-s3": "^3.1116.0",
+		"@aws-sdk/s3-request-presigner": "^3.1116.0",
 		"@elevenlabs/elevenlabs-js": "^2.56.0",
 		"@oslojs/crypto": "^1.0.1",
 		"@types/d3-scale": "^4.0.9",

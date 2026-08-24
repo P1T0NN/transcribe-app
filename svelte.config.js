@@ -34,9 +34,7 @@ const config = {
 					'https://*.gstatic.com',
 					'https://*.google.com',
 					'https://*.ggpht.com',
-					'https://*.googleusercontent.com',
-					'https://va.vercel-scripts.com',
-					'https://umami-sable-iota.vercel.app'
+					'https://*.googleusercontent.com'
 				],
 				'worker-src': ['self', 'blob:'],
 				'style-src': ['self', 'unsafe-inline', 'https://fonts.googleapis.com'],
@@ -53,13 +51,9 @@ const config = {
 					'https://*.googleapis.com',
 					'https://*.google.com',
 					'https://*.gstatic.com',
-					// Vercel Analytics + Speed Insights telemetry endpoint
-					'https://va.vercel-scripts.com',
 					// Cloudflare R2 — direct browser PUT to signed upload URLs and GET on public objects
 					'https://*.r2.cloudflarestorage.com',
-					'https://*.r2.dev',
-					// Umami analytics
-					'https://umami-sable-iota.vercel.app'
+					'https://*.r2.dev'
 				],
 				'frame-src': ['self', 'https://accounts.google.com', 'https://*.google.com'],
 				'object-src': ['none'],
