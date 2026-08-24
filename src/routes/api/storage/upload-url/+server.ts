@@ -46,6 +46,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({ key, uploadUrl });
 	} catch (err) {
 		console.error('[api/storage/upload-url]', err);
-		return json({ message: 'Could not prepare the upload.' }, { status: 500 });
+		const message = err instanceof Error ? err.message : 'Could not prepare the upload.';
+		return json({ message }, { status: 500 });
 	}
 };

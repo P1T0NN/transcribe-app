@@ -32,7 +32,11 @@ function getClient(): S3Client {
 		client = new S3Client({
 			region: 'auto',
 			endpoint,
-			credentials: { accessKeyId, secretAccessKey }
+			credentials: { accessKeyId, secretAccessKey },
+			// Flexible checksums (CRC32) get baked into presigned PUT URLs, but the
+			// browser never sends them, so R2 rejects the upload. Only send them when required.
+			requestChecksumCalculation: 'WHEN_REQUIRED',
+			responseChecksumValidation: 'WHEN_REQUIRED'
 		});
 	}
 
